@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARDEX JHSE | Gestión de Personal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <aside class="sidebar">
+        <div class="logo-container">
+            <div class="rock-logo">
+                <h1>CARDEX</h1>
+                <div class="lightning">⚡</div>
+                <h2>JHSE</h2>
+                <small>HUMAN RESOURCES</small>
+            </div>
+        </div>
+        <nav class="menu">
+            <button class="menu-btn active" onclick="switchTab('tab1')">👤 Datos Personales</button>
+            <button class="menu-btn" onclick="switchTab('tab2')">💼 Adm. y Familia</button>
+            <button class="menu-btn" onclick="switchTab('tab3')">📂 Documentación</button>
+        </nav>
+        <div class="main-actions">
+            <button class="btn btn-new" onclick="nuevoRegistro()">✨ Nuevo Registro</button>
+            <button class="btn btn-save" onclick="guardarEnDB()">💾 Guardar Todo</button>
+            <button class="btn btn-excel" onclick="exportarExcel()">📊 Exportar Excel</button>
+        </div>
+    </aside>
+
+    <main class="content">
+        <header class="header">
+            <h1>Panel de Control JHSE</h1>
+            <input type="text" id="buscador" placeholder="🔍 Buscar por CI o Apellido..." onkeyup="filtrarTabla()">
+        </header>
+
+        <form id="hrForm">
+            <section id="tab1" class="tab-content active">
+                <div class="card">
+                    <h3>Módulo I: Información Personal</h3>
+                    <div class="grid">
+                        <div class="field"><label>Ap. Paterno</label><input type="text" id="paterno" required></div>
+                        <div class="field"><label>Ap. Materno</label><input type="text" id="materno" required></div>
+                        <div class="field"><label>Nombres</label><input type="text" id="nombres" required></div>
+                        <div class="field"><label>Cédula de Identidad (CI)</label><input type="text" id="ci" required></div>
+                        <div class="field"><label>Edad</label><input type="number" id="edad"></div>
+                        <div class="field">
+                            <label>Sexo</label>
+                            <select id="sexo"><option>Masculino</option><option>Femenino</option></select>
+                        </div>
+                        <div class="field"><label>Fecha Nacimiento</label><input type="date" id="nacimiento"></div>
+                        <div class="field"><label>Teléfono Contacto</label><input type="tel" id="telefono"></div>
+                    </div>
+                    
+                    <div class="camera-box">
+                        <label>Captura de Fotografía Digital</label>
+                        <div class="cam-wrapper"><video id="video" autoplay></video></div>
+                        <canvas id="canvas" style="display:none;"></canvas>
+                        <div class="cam-btns">
+                            <button type="button" onclick="iniciarCamara()">Encender Cámara</button>
+                            <button type="button" onclick="capturarFoto()">Capturar Foto</button>
+                        </div>
+                        <img id="fotoPreview" class="preview-img">
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab2" class="tab-content">
+                <div class="card">
+                    <h3>Módulo II: Información Administrativa</h3>
+                    <div class="grid">
+                        <div class="field"><label>Cargo</label><input type="text" id="cargo"></div>
+                        <div class="field"><label>Puesto</label><input type="text" id="puesto"></div>
+                        <div class="field"><label>Fecha Ingreso</label><input type="date" id="ingreso"></div>
+                        <div class="field"><label>Fecha Baja</label><input type="date" id="baja"></div>
+                    </div>
+                    <h3 style="margin-top:20px">Entorno Familiar y Referencias</h3>
+                    <div class="grid">
+                        <div class="field"><label>Nombre del Padre</label><input type="text" id="papa"></div>
+                        <div class="field"><label>Nombre de la Madre</label><input type="text" id="mama"></div>
+                        <div class="field"><label>Nombre Esposa/o</label><input type="text" id="esposa"></div>
+                        <div class="field"><label>Números de Referencia</label><input type="text" id="refNum"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab3" class="tab-content">
+                <div class="card">
+                    <h3>Módulo III: Documentación Presentada</h3>
+                    <div class="docs-list" id="docsList">
+                        <label><input type="checkbox" data-doc="FELCN"> Antecedentes FELCN</label>
+                        <label><input type="checkbox" data-doc="FELCC"> Antecedentes FELCC</label>
+                        <label><input type="checkbox" data-doc="REJAP"> Certificado REJAP</label>
+                        <label><input type="checkbox" data-doc="SIPASSE"> Certificado No Violencia</label>
+                        <label><input type="checkbox" data-doc="DOMICILIO"> Ubicación Domicilio</label>
+                        <label><input type="checkbox" data-doc="LUZ"> Aviso de Luz</label>
+                        <label><input type="checkbox" data-doc="POSTAL"> Fotografía Postal</label>
+                        <label><input type="checkbox" data-doc="MILITAR"> Fotocopia Libreta Militar</label>
+                        <label><input type="checkbox" data-doc="CI_DOC"> Fotocopia C.I.</label>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+        <section class="table-section">
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Empleado</th>
+                            <th>CI</th>
+                            <th>Cargo</th>
+                            <th>Docs</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dbBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
